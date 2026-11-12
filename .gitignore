@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+.npm-cache/
+
+# build output
+dist/
+.astro/
+
+# local artifacts
+shots/
+*.log
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+
+# env
+.env
+.env.*

@@ -1,0 +1,29 @@
+---
+import StarIcon from '../ui/StarIcon.astro';
+import HandDivider from '../ui/HandDivider.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 pb-12">
+  <HandDivider variant="wave" class="mx-auto max-w-[1120px] px-5 opacity-70 sm:px-8 lg:px-10" />
+
+  <div
+    class="mx-auto mt-10 flex max-w-[1120px] flex-col items-start justify-between gap-6 px-5 sm:flex-row sm:items-center sm:px-8 lg:px-10"
+  >
+    <div>
+      <p class="font-latin text-[0.9375rem] font-semibold tracking-wide text-ink">Phanatomcat</p>
+      <p class="mt-1.5 text-[0.8125rem] text-ink-mute">
+        © {year} · 用 ♡ 与星屑写成 · 正文区永远保持干净
+      </p>
+    </div>
+
+    <div class="flex items-center gap-5 text-[0.8125rem] text-ink-soft">
+      <a class="transition hover:text-ink hover:underline hover:decoration-wavy" href="/rss.xml">RSS</a>
+      <a class="transition hover:text-ink hover:underline hover:decoration-wavy" href="/sitemap-index.xml">Sitemap</a>
+      <a class="transition hover:text-ink hover:underline hover:decoration-wavy" href="/games">游戏</a>
+      <a class="transition hover:text-ink hover:underline hover:decoration-wavy" href="/about">关于</a>
+      <StarIcon size={11} class="text-sakura/80" />
+    </div>
+  </div>
+</footer>

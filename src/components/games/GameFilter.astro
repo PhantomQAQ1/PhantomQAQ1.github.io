@@ -1,0 +1,138 @@
+---
+import type { GameGenre, GameStatus } from '../../data/games';
+import { GENRES, STATUS_LABEL, STATUS_ORDER } from '../../data/games';
+
+interface Props {
+  /** 各状态的数量，用于按钮右侧的小数字 */
+  counts: Record<string, number>;
+  class?: string;
+}
+
+const { counts, class: cls = '' } = Astro.props;
+
+/** 只显示确实有游戏的状态，避免出现「0 款」的死按钮 */
+const statuses: GameStatus[] = STATUS_ORDER.filter((status) => (counts[status] ?? 0) > 0);
+const genres: GameGenre[] = GENRES;
+---
+
+<div class:list={['card-hand p-5 sm:p-6', cls]}>
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <p class="kicker">Filter</p>
+      <p class="mt-1 text-[0.8125rem] text-ink-mute">点一下就能筛，键盘 Tab + Enter 同样可用。</p>
+    </div>
+
+    <p
+      class="font-latin text-[0.75rem] tracking-[0.12em] text-ink-mute uppercase"
+      role="status"
+      aria-live="polite"
+      data-count
+    >
+      共 {counts.all ?? 0} 款
+    </p>
+  </div>
+
+  <!-- 状态 -->
+  <div class="mt-5" role="group" aria-labelledby="filter-status-label">
+    <p id="filter-status-label" class="mb-2.5 text-[0.75rem] text-ink-mute">状态</p>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="chip" data-filter="status" data-value="all" aria-pressed="true">
+        全部
+        <span class="chip-count">{counts.all ?? 0}</span>
+      </button>
+
+      {
+        statuses.map((status) => (
+          <button
+            type="button"
+            class="chip"
+            data-filter="status"
+            data-value={status}
+            aria-pressed="false"
+          >
+            {STATUS_LABEL[status]}
+            <span class="chip-count">{counts[status] ?? 0}</span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- 类型 -->
+  <div class="mt-4" role="group" aria-labelledby="filter-genre-label">
+    <p id="filter-genre-label" class="mb-2.5 text-[0.75rem] text-ink-mute">类型</p>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="chip" data-filter="genre" data-value="all" aria-pressed="true">
+        全部
+      </button>
+
+      {
+        genres.map((genre) => (
+          <button type="button" class="chip" data-filter="genre" data-value={genre} aria-pressed="false">
+            {genre}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-between border-t border-line pt-4">
+    <p class="text-[0.75rem] text-ink-mute" data-empty-hint hidden>这个条件下没有游戏。</p>
+    <button
+      type="button"
+      class="ml-auto text-[0.75rem] text-ink-soft underline decoration-sakura-ink/60 decoration-wavy decoration-[1.5px] underline-offset-4 transition hover:text-ink"
+      data-reset
+    >
+      重置筛选
+    </button>
+  </div>
+</div>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+    transition:
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .chip:hover {
+    transform: translateY(-1px);
+    border-color: var(--sakura-ink);
+    color: var(--ink);
+  }
+
+  .chip[aria-pressed='true'] {
+    border-color: var(--night);
+    background: var(--night);
+    color: var(--on-night);
+    box-shadow: 2px 3px 0 rgb(43 42 51 / 0.14);
+  }
+
+  .dark .chip[aria-pressed='true'] {
+    border-color: #5443c9;
+    background: #5443c9;
+    color: #fff9f2;
+    box-shadow: 2px 3px 0 rgb(0 0 0 / 0.5);
+  }
+
+  .chip-count {
+    font-family: var(--font-latin);
+    font-size: 0.6875rem;
+    opacity: 0.62;
+  }
+
+  .chip[aria-pressed='true'] .chip-count {
+    opacity: 0.8;
+  }
+</style>

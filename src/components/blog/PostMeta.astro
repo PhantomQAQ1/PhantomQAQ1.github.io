@@ -1,0 +1,39 @@
+---
+interface Props {
+  date: string;
+  readingTime?: number;
+  category?: string;
+  class?: string;
+  size?: 'sm' | 'md';
+}
+
+const { date, readingTime, category, class: cls = '', size = 'sm' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex flex-wrap items-center gap-2 font-latin font-medium text-ink-mute',
+    size === 'sm' ? 'text-[0.75rem]' : 'text-[0.8125rem]',
+    cls,
+  ]}
+>
+  <time>{date}</time>
+  {
+    readingTime !== undefined && (
+      <>
+        <span class="h-1 w-1 rounded-full bg-ink-mute/50" />
+        <span class="font-body">{readingTime} 分钟</span>
+      </>
+    )
+  }
+  {
+    category && (
+      <>
+        <span class="h-1 w-1 rounded-full bg-ink-mute/50" />
+        <span class="font-display rounded-full border-[1.5px] border-line px-2 py-0.5 text-[0.6875rem] tracking-wide">
+          {category}
+        </span>
+      </>
+    )
+  }
+</div>

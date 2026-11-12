@@ -1,0 +1,68 @@
+---
+import '@fontsource/quicksand/500.css';
+import '@fontsource/quicksand/600.css';
+import '@fontsource/quicksand/700.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** 相对路径或绝对路径，缺省用头像 */
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = '一只住在海螺里的猫的私人手帐：轻小说、插画，和一些没头没尾的日常。',
+  image = '/images/avatar.jpg',
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://phanatomcat.example.com');
+const canonical = new URL(Astro.url.pathname, site);
+const ogImage = new URL(image, site);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="Phanatomcat" href="/rss.xml" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:site_name" content="Phanatomcat" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#FFF9F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14121C" media="(prefers-color-scheme: dark)" />
+    <script is:inline>
+      (() => {
+        try {
+          const forced = new URLSearchParams(location.search).get('theme');
+          const saved = localStorage.getItem('theme');
+          const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+          const dark = forced ? forced === 'dark' : saved ? saved === 'dark' : prefersDark;
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {}
+      })();
+    </script>
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen bg-paper text-ink antialiased">
+    <slot />
+  </body>
+</html>

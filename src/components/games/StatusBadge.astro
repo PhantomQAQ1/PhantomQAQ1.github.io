@@ -1,0 +1,58 @@
+---
+import type { GameStatus } from '../../data/games';
+import { STATUS_LABEL } from '../../data/games';
+
+interface Props {
+  status: GameStatus;
+  class?: string;
+  size?: 'sm' | 'md';
+}
+
+const { status, class: cls = '', size = 'sm' } = Astro.props;
+
+// 颜色 + 形状双编码：不只靠颜色区分状态
+const styles: Record<GameStatus, { cls: string; mark: string }> = {
+  playing: {
+    cls: 'bg-mint/35 border-mint-badge/45 text-mint-badge dark:bg-mint/20',
+    mark: '●',
+  },
+  mainstay: {
+    cls: 'bg-night/15 border-night/40 text-night-deep dark:bg-night/20',
+    mark: '◉',
+  },
+  cleared: {
+    cls: 'bg-sakura/30 border-sakura/60 text-sakura-badge dark:bg-sakura/18',
+    mark: '✔',
+  },
+  casual: {
+    cls: 'bg-tape/75 border-line text-ink-soft dark:bg-tape/60',
+    mark: '~',
+  },
+  shelved: {
+    cls: 'bg-ink-mute/12 border-ink-mute/35 text-ink-mute border-dashed',
+    mark: '⏸',
+  },
+  wishlist: {
+    cls: 'bg-transparent border-line text-ink-mute border-dashed',
+    mark: '☆',
+  },
+};
+
+const { cls: tone, mark } = styles[status];
+const sizes = {
+  sm: 'px-2.5 py-1 text-[0.6875rem] gap-1',
+  md: 'px-3 py-1.5 text-[0.75rem] gap-1.5',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex shrink-0 items-center rounded-full border-[1.5px] font-medium whitespace-nowrap',
+    tone,
+    sizes[size],
+    cls,
+  ]}
+>
+  <span aria-hidden="true" class="text-[0.8em] leading-none">{mark}</span>
+  {STATUS_LABEL[status]}
+</span>

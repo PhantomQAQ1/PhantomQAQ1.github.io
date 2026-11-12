@@ -1,0 +1,84 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import TagCloud from '../../components/blog/TagCloud.astro';
+import HandDivider from '../../components/ui/HandDivider.astro';
+import StarIcon from '../../components/ui/StarIcon.astro';
+import { getPosts, getTags, formatDate } from '../../lib/posts';
+
+const posts = await getPosts();
+const tags = await getTags(posts);
+
+const groups = tags.map((tag) => {
+  const items = posts.filter((post) => post.data.tags.includes(tag.name));
+  return { ...tag, posts: items.slice(0, 3), latestDate: formatDate(new Date(tag.latest)) };
+});
+---
+
+<PageLayout
+  title="标签 · Phanatomcat"
+  description="按标签找文章：日常、轻小说、建站、手帐、猫……"
+>
+  <section class="mx-auto max-w-[1120px] px-5 pt-14 sm:px-8 lg:px-10">
+    <p class="kicker flex items-center gap-2">
+      <StarIcon size={9} class="text-sakura-ink" />
+      Tags
+    </p>
+    <h1 class="mt-4 font-display text-[clamp(2.25rem,4.6vw,3.25rem)] leading-tight text-ink">
+      标签索引
+    </h1>
+    <p class="mt-4 max-w-[34rem] text-[0.9375rem] leading-[1.9] text-ink-soft">
+      {tags.length}
+      个标签。比分类更细一点——分类回答「这是什么」，标签回答「我当时在想什么」。
+    </p>
+
+    <div class="card-hand mt-8 p-6 sm:p-7">
+      <TagCloud tags={tags} />
+    </div>
+  </section>
+
+  <HandDivider variant="wave" class="mx-auto mt-12 max-w-[1120px] px-5 opacity-70 sm:px-8 lg:px-10" />
+
+  <section class="mx-auto max-w-[1120px] px-5 pt-12 sm:px-8 lg:px-10">
+    <div class="grid gap-5 sm:grid-cols-2">
+      {
+        groups.map((group) => (
+          <div class="card-hand relative flex flex-col p-6">
+            <div class="flex items-baseline justify-between gap-3">
+              <a
+                href={`/tags/${encodeURIComponent(group.name)}`}
+                class="font-display text-[1.1875rem] text-ink transition hover:text-night-deep"
+              >
+                #{group.name}
+              </a>
+              <span class="font-latin text-[0.75rem] text-ink-mute">
+                {group.count} 篇
+              </span>
+            </div>
+
+            <ul class="mt-4 space-y-2 border-t border-line pt-4">
+              {group.posts.map((post) => (
+                <li>
+                  <a
+                    href={`/posts/${post.id}`}
+                    class="group flex items-baseline justify-between gap-3 text-[0.875rem] text-ink-soft transition hover:text-ink"
+                  >
+                    <span class="truncate">{post.data.title}</span>
+                    <time class="shrink-0 font-latin text-[0.6875rem] text-ink-mute">
+                      {formatDate(post.data.pubDate)}
+                    </time>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            {group.count > 3 && (
+              <p class="mt-3 font-latin text-[0.6875rem] tracking-[0.12em] text-ink-mute uppercase">
+                +{group.count - 3} more
+              </p>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</PageLayout>

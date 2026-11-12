@@ -1,0 +1,30 @@
+---
+import TagPill from '../ui/TagPill.astro';
+import type { TagInfo } from '../../lib/posts';
+
+interface Props {
+  tags: TagInfo[];
+  class?: string;
+  /** 只显示前 n 个 */
+  limit?: number;
+}
+
+const { tags, class: cls = '', limit } = Astro.props;
+const list = limit ? tags.slice(0, limit) : tags;
+const tones = ['sakura', 'mint', 'night', 'plain'] as const;
+---
+
+<ul class:list={['flex flex-wrap gap-2', cls]}>
+  {
+    list.map((tag, i) => (
+      <li>
+        <TagPill
+          name={tag.name}
+          count={tag.count}
+          size={tag.count > 2 ? 'md' : 'sm'}
+          tone={tones[i % tones.length]}
+        />
+      </li>
+    ))
+  }
+</ul>

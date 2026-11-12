@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: cls = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'relative max-w-[17rem] rounded-[18px_22px_16px_20px] border-[1.5px] border-line bg-surface px-4 py-2.5 text-[0.875rem] leading-relaxed text-ink-soft shadow-[2px_3px_0_rgba(43,42,51,0.08)]',
+    cls,
+  ]}
+>
+  <slot />
+  <span
+    class="absolute -bottom-[7px] left-6 h-3 w-3 rotate-45 border-r-[1.5px] border-b-[1.5px] border-line bg-surface"
+    aria-hidden="true"></span>
+</div>

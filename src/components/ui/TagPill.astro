@@ -1,0 +1,36 @@
+---
+interface Props {
+  name: string;
+  count?: number;
+  tone?: 'sakura' | 'mint' | 'night' | 'plain';
+  href?: string;
+  size?: 'sm' | 'md';
+}
+
+const { name, count, tone = 'plain', href = `/tags/${encodeURIComponent(name)}`, size = 'sm' } =
+  Astro.props;
+
+const tones = {
+  sakura: 'bg-sakura/22 border-sakura/50',
+  mint: 'bg-mint/25 border-mint/60',
+  night: 'bg-night/12 border-night/35',
+  plain: 'bg-surface border-line',
+};
+const sizes = {
+  sm: 'px-2.5 py-1 text-[0.75rem]',
+  md: 'px-3.5 py-1.5 text-[0.8125rem]',
+};
+---
+
+<a
+  href={href}
+  class:list={[
+    'inline-flex items-center gap-1.5 rounded-full border-[1.5px] text-ink-soft transition duration-200 hover:-translate-y-px hover:text-ink',
+    tones[tone],
+    sizes[size],
+  ]}
+>
+  <span class="text-ink-mute/70 select-none">#</span>
+  <span>{name}</span>
+  {count !== undefined && <span class="font-latin text-ink-mute">{count}</span>}
+</a>

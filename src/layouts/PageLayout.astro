@@ -1,0 +1,54 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/site/SiteHeader.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  /** 文章页显示顶部阅读进度条 */
+  progress?: boolean;
+}
+
+const { progress = false, ...meta } = Astro.props;
+---
+
+<BaseLayout {...meta}>
+  <slot name="head" slot="head" />
+  <SiteHeader />
+
+  {progress && (
+    <div
+      class="fixed inset-x-0 top-16 z-30 h-[3px] bg-transparent"
+      aria-hidden="true"
+      data-reading-progress>
+      <span
+        class="block h-full w-0 rounded-r-full bg-gradient-to-r from-sakura via-sakura-ink to-night transition-[width] duration-75 ease-out"
+      ></span>
+    </div>
+  )}
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const bar = document.querySelector('[data-reading-progress] > span');
+  if (bar) {
+    const update = () => {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const ratio = max > 0 ? Math.min(1, doc.scrollTop / max) : 0;
+      (bar as HTMLElement).style.width = `${(ratio * 100).toFixed(2)}%`;
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+  }
+</script>

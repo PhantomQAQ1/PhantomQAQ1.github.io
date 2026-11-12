@@ -1,0 +1,230 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import GameCover from '../../components/games/GameCover.astro';
+import StatusBadge from '../../components/games/StatusBadge.astro';
+import AccountShots from '../../components/games/AccountShots.astro';
+import HandDivider from '../../components/ui/HandDivider.astro';
+import StarIcon from '../../components/ui/StarIcon.astro';
+import { games, formatHours } from '../../data/games';
+
+export const getStaticPaths = () =>
+  games.map((game) => ({ params: { slug: game.slug }, props: { game } }));
+
+const game = Astro.props.game;
+
+const rating = Math.max(0, Math.min(5, game.rating ?? 0));
+const ratingPct = (rating / 5) * 100;
+const body = game.review ?? game.shortReview;
+
+const meta: string[] = [game.genre, ...game.platforms];
+if (game.playtime !== undefined) meta.push(`${formatHours(game.playtime)} 小时`);
+if (game.startDate) meta.push(`开始于 ${game.startDate}`);
+if (game.finishDate) meta.push(`通关于 ${game.finishDate}`);
+
+const others = games.filter((item) => item.slug !== game.slug).slice(0, 3);
+
+const profileCells = (
+  [
+    game.profile?.level !== undefined && { label: '等级', value: `Lv.${game.profile.level}` },
+    game.profile?.server && { label: '大区', value: game.profile.server },
+    game.profile?.activeDays !== undefined && {
+      label: '活跃天数',
+      value: `${formatHours(game.profile.activeDays)} 天`,
+    },
+  ] as ({ label: string; value: string } | false)[]
+).filter(Boolean) as { label: string; value: string }[];
+
+const highlights = game.profile?.highlights ?? [];
+---
+
+<PageLayout
+  title={`${game.name} · 游戏记录 · Phanatomcat`}
+  description={game.shortReview}
+  type="article"
+>
+  <article class="relative overflow-hidden">
+    <div class="dot-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true"></div>
+
+    <div class="relative mx-auto max-w-[1120px] px-5 pt-10 sm:px-8 lg:px-10">
+      <a
+        href="/games"
+        class="inline-flex items-center gap-1.5 text-[0.8125rem] text-ink-mute transition hover:text-ink"
+      >
+        <span aria-hidden="true">←</span> 游戏库
+      </a>
+
+      <div
+        class="mt-6 grid gap-8 lg:grid-cols-[minmax(0,22rem)_1fr] lg:items-start lg:gap-12"
+        {...(game.review ? {} : { 'data-pagefind-body': true })}
+      >
+        <!-- 封面 -->
+        <div class="relative max-w-[22rem]">
+          <GameCover
+            slug={game.slug}
+            glyph={game.cover.glyph}
+            label={game.cover.label ?? game.genre}
+            tone={game.cover.tone}
+            gradient={game.coverGradient}
+            class="rounded-[22px] border-[1.5px] border-line shadow-[0_22px_50px_-26px_rgba(108,92,231,0.5)]"
+          />
+          <StarIcon size={15} class="absolute -top-2 -right-2 text-sakura-ink/60" />
+        </div>
+
+        <!-- 信息 -->
+        <div>
+          <p class="kicker flex items-center gap-2">
+            <StarIcon size={9} class="text-sakura-ink" />
+            Game · {game.genre}
+          </p>
+
+          <h1 class="mt-3 font-display text-[clamp(1.875rem,4vw,2.75rem)] leading-tight text-ink">
+            {game.name}
+          </h1>
+
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            <StatusBadge status={game.status} size="md" />
+            {
+              game.rating !== undefined && (
+                <p
+                  class="relative font-latin text-[0.875rem]"
+                  aria-label={`评分 ${game.rating} 分，满分 5 分`}
+                >
+                  <span aria-hidden="true" class="text-ink-mute/35">★★★★★</span>
+                  <span
+                    aria-hidden="true"
+                    class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-sakura-ink"
+                    style={`width:${ratingPct}%`}>★★★★★</span
+                  >
+                </p>
+              )
+            }
+          </div>
+
+          <p class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 font-latin text-[0.8125rem] text-ink-mute">
+            {meta.map((item, index) => (
+              <>
+                {index > 0 && <span class="h-1 w-1 rounded-full bg-ink-mute/50" aria-hidden="true" />}
+                <span class="font-body">{item}</span>
+              </>
+            ))}
+          </p>
+
+          <p class="mt-5 max-w-[38rem] text-[0.9375rem] leading-[1.95] text-ink-soft">
+            {game.shortReview}
+          </p>
+
+          <div class="mt-5 flex flex-wrap gap-1.5">
+            {
+              game.tags.map((tag) => (
+                <span class="rounded-[9px] border-[1.2px] border-line bg-tape/55 px-2.5 py-1 text-[0.75rem] text-ink-soft dark:bg-tape/45">
+                  {tag}
+                </span>
+              ))
+            }
+          </div>
+
+          {
+            game.link && (
+              <div class="mt-7">
+                <a
+                  href={game.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 rounded-full border-[1.5px] border-night bg-night px-6 py-3 text-sm font-medium text-on-night shadow-[2px_3px_0_rgba(43,42,51,0.14)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[3px_5px_0_rgba(43,42,51,0.18)] dark:border-[#5443c9] dark:bg-[#5443c9] dark:text-[#fff9f2]"
+                >
+                  官网
+                  <span aria-hidden="true">↗</span>
+                  <span class="sr-only">（在新标签页打开）</span>
+                </a>
+              </div>
+            )
+          }
+        </div>
+      </div>
+
+      {
+        profileCells.length > 0 && (
+          <section class="card-hand mt-10 p-6 sm:p-7" aria-label="游戏内档案">
+            <p class="kicker flex items-center gap-2">
+              <StarIcon size={9} class="text-sakura-ink" />
+              Profile · 游戏档案
+            </p>
+
+            <dl class="mt-4 grid grid-cols-3 gap-x-4 gap-y-4">
+              {profileCells.map((cell) => (
+                <div class="border-l border-line pl-4 first:border-l-0 first:pl-0">
+                  <dt class="text-[0.75rem] text-ink-mute">{cell.label}</dt>
+                  <dd class="mt-1 font-latin text-[1.25rem] leading-none font-semibold text-ink">
+                    {cell.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            {highlights.length > 0 && (
+              <ul class="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+                {highlights.map((item) => (
+                  <li class="flex items-baseline gap-1.5 rounded-[10px] border-[1.2px] border-line bg-tape/45 px-2.5 py-1.5 dark:bg-tape/35">
+                    <span class="text-[0.6875rem] text-ink-mute">{item.label}</span>
+                    <span class="font-latin text-[0.8125rem] text-ink">{item.value}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <p class="mt-4 text-[0.6875rem] leading-relaxed text-ink-mute">
+              以上数字截图自游戏内个人主页，只做记录，不含 UID 与好友码。
+            </p>
+          </section>
+        )
+      }
+
+      {
+        game.account !== false && (
+          <AccountShots slug={game.slug} name={game.name} class="mt-10" />
+        )
+      }
+
+      {
+        game.review && (
+          <>
+            <HandDivider variant="spiral" class="mt-12 mb-10" />
+            <div class="prose-hand max-w-[40rem]" data-pagefind-body>
+              {game.review.split('\n').filter(Boolean).map((paragraph) => <p>{paragraph}</p>)}
+            </div>
+          </>
+        )
+      }
+
+      <HandDivider variant="spiral" class="mt-14 mb-10" />
+
+      <!-- 其它游戏 -->
+      <section class="max-w-[40rem]">
+        <p class="kicker">More · 也在玩</p>
+        <ul class="mt-4 divide-y divide-line/80 border-y border-line/80">
+          {
+            others.map((item) => (
+              <li>
+                <a
+                  href={`/games/${item.slug}/`}
+                  class="flex items-center justify-between gap-4 py-3.5 transition hover:text-night-deep"
+                >
+                  <span class="text-[0.9375rem] text-ink">{item.name}</span>
+                  <span class="text-[0.75rem] text-ink-mute">{item.genre}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-8 text-[0.8125rem] text-ink-mute">
+          <a
+            href="/games"
+            class="underline decoration-sakura-ink/60 decoration-wavy decoration-[1.5px] underline-offset-[6px] transition hover:text-ink"
+          >返回游戏库</a
+          >
+        </p>
+      </section>
+    </div>
+  </article>
+</PageLayout>

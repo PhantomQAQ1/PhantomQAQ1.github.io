@@ -1,0 +1,60 @@
+---
+interface Props {
+  current: number;
+  total: number;
+  /** 第 n 页的地址，默认 /posts/page/n/ */
+  href: (page: number) => string;
+  class?: string;
+}
+
+const { current, total, href, class: cls = '' } = Astro.props;
+const pages = Array.from({ length: total }, (_, i) => i + 1);
+
+const base =
+  'inline-flex h-9 min-w-9 items-center justify-center rounded-full border-[1.5px] px-3 font-latin text-[0.8125rem] transition duration-200';
+---
+
+{
+  total > 1 && (
+    <nav class:list={['flex items-center justify-center gap-2', cls]} aria-label="分页">
+      <a
+        href={href(Math.max(1, current - 1))}
+        aria-disabled={current === 1}
+        class:list={[
+          base,
+          'border-line text-ink-soft hover:-translate-y-px hover:border-sakura-ink hover:text-ink',
+          current === 1 && 'pointer-events-none opacity-40',
+        ]}
+      >
+        ←
+      </a>
+
+      {pages.map((page) => (
+        <a
+          href={href(page)}
+          aria-current={page === current ? 'page' : undefined}
+          class:list={[
+            base,
+            page === current
+              ? 'border-night bg-night text-on-night dark:border-[#5443c9] dark:bg-[#5443c9] dark:text-[#fff9f2]'
+              : 'border-line text-ink-soft hover:-translate-y-px hover:border-sakura-ink hover:text-ink',
+          ]}
+        >
+          {page}
+        </a>
+      ))}
+
+      <a
+        href={href(Math.min(total, current + 1))}
+        aria-disabled={current === total}
+        class:list={[
+          base,
+          'border-line text-ink-soft hover:-translate-y-px hover:border-sakura-ink hover:text-ink',
+          current === total && 'pointer-events-none opacity-40',
+        ]}
+      >
+        →
+      </a>
+    </nav>
+  )
+}

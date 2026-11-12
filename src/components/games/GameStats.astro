@@ -1,0 +1,52 @@
+---
+import StarIcon from '../ui/StarIcon.astro';
+import type { GameStatsData } from '../../data/games';
+import { formatHours } from '../../data/games';
+
+interface Props {
+  stats: GameStatsData;
+  class?: string;
+}
+
+const { stats, class: cls = '' } = Astro.props;
+
+const items = [
+  { label: '收录游戏', value: String(stats.total), unit: '款' },
+  { label: '正在玩', value: String(stats.playing), unit: '款' },
+  { label: '常驻', value: String(stats.mainstay), unit: '款' },
+  { label: '活跃天数', value: formatHours(stats.activeDays), unit: '天' },
+];
+
+const noteParts: string[] = [
+  stats.cleared > 0 ? `其中 ${stats.cleared} 款已经通关` : '',
+  stats.profileCount > 0
+    ? `活跃天数来自 ${stats.profileCount} 款有游戏内档案的记录`
+    : '还没有录入游戏内档案',
+];
+---
+
+<div class:list={['card-hand relative overflow-hidden p-6 sm:p-7', cls]}>
+  <StarIcon size={13} class="absolute top-5 right-6 text-sakura/70" />
+
+  <p class="kicker">Game stats</p>
+
+  <dl class="mt-5 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4">
+    {
+      items.map((item) => (
+        <div class="border-l border-line pl-4 first:border-l-0 first:pl-0 sm:border-l sm:pl-4 sm:first:border-l-0 sm:first:pl-0">
+          <dt class="text-[0.75rem] text-ink-mute">{item.label}</dt>
+          <dd class="mt-1.5 flex items-baseline gap-1">
+            <span class="font-latin text-[1.75rem] leading-none font-semibold text-ink">
+              {item.value}
+            </span>
+            <span class="text-[0.75rem] text-ink-mute">{item.unit}</span>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <p class="mt-6 border-t border-line pt-4 text-[0.75rem] leading-relaxed text-ink-mute">
+    {noteParts.filter(Boolean).join('；')}。
+  </p>
+</div>

@@ -1,0 +1,71 @@
+---
+import type { Heading } from '../../lib/posts';
+
+interface Props {
+  headings: Heading[];
+  class?: string;
+}
+
+const { headings, class: cls = '' } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 1 && (
+    <nav class:list={['text-[0.8125rem]', cls]} aria-labelledby="toc-title" data-toc>
+      <p id="toc-title" class="kicker flex items-center gap-1.5">
+        <span class="h-px w-4 bg-line" />
+        目录
+      </p>
+      <ul class="mt-4 space-y-0.5 border-l border-line">
+        {items.map((item) => (
+          <li>
+            <a
+              href={`#${item.slug}`}
+              data-toc-link={item.slug}
+              class:list={[
+                'relative -ml-px block border-l-[1.5px] border-transparent py-1 leading-relaxed text-ink-mute transition duration-200 hover:text-ink',
+                item.depth === 3 ? 'pl-7 text-[0.75rem]' : 'pl-4',
+              ]}
+            >
+              {item.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+  if (links.length) {
+    const targets = links
+      .map((link) => {
+        const id = link.dataset.tocLink!;
+        const el = document.getElementById(id);
+        return el ? { link, el } : null;
+      })
+      .filter(Boolean) as { link: HTMLAnchorElement; el: HTMLElement }[];
+
+    const ACTIVE = ['text-ink', 'border-sakura-ink', 'font-medium'];
+
+    const sync = () => {
+      const offset = 120;
+      let current = targets[0];
+      for (const item of targets) {
+        if (item.el.getBoundingClientRect().top <= offset) current = item;
+      }
+      for (const item of targets) {
+        const on = item === current;
+        item.link.classList.toggle('text-ink', on);
+        item.link.classList.toggle('border-sakura-ink', on);
+        item.link.classList.toggle('font-medium', on);
+      }
+      void ACTIVE;
+    };
+
+    sync();
+    addEventListener('scroll', sync, { passive: true });
+  }
+</script>

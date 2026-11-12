@@ -1,0 +1,21 @@
+---
+interface Props {
+  width?: number;
+  rotate?: number;
+  tone?: 'cream' | 'sakura';
+  class?: string;
+}
+
+const { width = 88, rotate = -6, tone = 'cream', class: cls = '' } = Astro.props;
+
+const styles = `width:${width}px;--r:${rotate}deg;transform:rotate(${rotate}deg)`;
+---
+
+<span
+  class:list={[
+    'tape pointer-events-none absolute h-6',
+    cls,
+    tone === 'sakura' && '!bg-sakura/60',
+  ]}
+  style={styles}
+  aria-hidden="true"></span>

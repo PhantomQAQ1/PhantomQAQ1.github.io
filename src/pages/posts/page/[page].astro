@@ -1,0 +1,57 @@
+---
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '../../../layouts/PageLayout.astro';
+import ArchiveList from '../../../components/blog/ArchiveList.astro';
+import HandDivider from '../../../components/ui/HandDivider.astro';
+import StarIcon from '../../../components/ui/StarIcon.astro';
+import { getPosts, type Post } from '../../../lib/posts';
+
+export const getStaticPaths = (async () => {
+  const PAGE_SIZE = 9;
+  const posts = await getPosts();
+  const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+
+  return Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter((page) => page > 1)
+    .map((page) => ({
+      params: { page: String(page) },
+      props: {
+        page,
+        totalPages,
+        posts: posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+      },
+    }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: number;
+  totalPages: number;
+  posts: Post[];
+}
+
+const { page, totalPages, posts } = Astro.props;
+---
+
+<PageLayout
+  title={`全部文章 · 第 ${page} 页 · Phanatomcat`}
+  description={`按时间倒序排列的全部文章，第 ${page} 页。`}
+>
+  <section class="mx-auto max-w-[1120px] px-5 pt-14 sm:px-8 lg:px-10">
+    <p class="kicker flex items-center gap-2">
+      <StarIcon size={9} class="text-sakura-ink" />
+      Archive
+    </p>
+    <h1 class="mt-4 font-display text-[clamp(2.25rem,4.6vw,3.25rem)] leading-tight text-ink">
+      全部文章
+    </h1>
+    <p class="mt-4 max-w-[34rem] text-[0.9375rem] leading-[1.9] text-ink-soft">
+      第 {page} 页，共 {totalPages} 页。往前翻还有更旧的。
+    </p>
+  </section>
+
+  <HandDivider variant="wave" class="mx-auto mt-12 max-w-[1120px] px-5 opacity-70 sm:px-8 lg:px-10" />
+
+  <section class="mx-auto max-w-[1120px] px-5 pt-12 sm:px-8 lg:px-10">
+    <ArchiveList posts={posts} page={page} totalPages={totalPages} />
+  </section>
+</PageLayout>

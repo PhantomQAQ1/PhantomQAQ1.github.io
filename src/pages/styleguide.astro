@@ -1,0 +1,360 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/site/SiteHeader.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import Button from '../components/ui/Button.astro';
+import TagPill from '../components/ui/TagPill.astro';
+import StarIcon from '../components/ui/StarIcon.astro';
+import StickerTape from '../components/ui/StickerTape.astro';
+import SpeechBubble from '../components/ui/SpeechBubble.astro';
+import HandDivider from '../components/ui/HandDivider.astro';
+import PostCard from '../components/content/PostCard.astro';
+
+const posts = [
+  {
+    slug: 'first-letter',
+    title: '海螺里的第一封信',
+    excerpt:
+      '搬进这只壳的第七天，我决定写点什么。关于那些被折叠进抽屉的下午，和一只总在窗台上打盹的猫。',
+    date: '2026.02.11',
+    readingTime: 4,
+    label: '随笔',
+    tone: 'sakura' as const,
+    tags: [
+      { name: '日常', tone: 'sakura' as const },
+      { name: '随笔', tone: 'plain' as const },
+    ],
+  },
+  {
+    slug: 'three-cat-settings',
+    title: '关于猫的三个未完成设定',
+    excerpt:
+      '设定一：它其实不会说话，只是恰好每次都点头。设定二：它记得所有人的生日，却不记得自己几岁。',
+    date: '2026.02.03',
+    readingTime: 7,
+    label: '小说',
+    tone: 'night' as const,
+    tags: [
+      { name: '轻小说', tone: 'night' as const },
+      { name: '猫', tone: 'plain' as const },
+    ],
+  },
+  {
+    slug: 'desk-remake',
+    title: '星屑与胶带：我的桌面改造',
+    excerpt:
+      '把键盘垫换成奶油色，加了一盏很暗的灯。比起效率，我好像更想要一点点「被照顾着」的错觉。',
+    date: '2026.01.22',
+    readingTime: 5,
+    label: '日志',
+    tone: 'mint' as const,
+    tags: [
+      { name: '日志', tone: 'mint' as const },
+      { name: '桌面', tone: 'plain' as const },
+    ],
+  },
+];
+
+const swatches = [
+  { name: 'paper', cls: 'bg-paper', note: '底色' },
+  { name: 'surface', cls: 'bg-surface', note: '卡片' },
+  { name: 'sunken', cls: 'bg-sunken', note: '引用/代码' },
+  { name: 'ink', cls: 'bg-ink', note: '文字' },
+  { name: 'line', cls: 'bg-line', note: '细线' },
+  { name: 'sakura', cls: 'bg-sakura', note: '樱粉' },
+  { name: 'mint', cls: 'bg-mint', note: '薄荷' },
+  { name: 'night', cls: 'bg-night', note: '夜空紫' },
+];
+---
+
+<BaseLayout title="Phanatomcat · 风格样张" noindex>
+  <Fragment slot="head"><meta name="robots" content="noindex, nofollow" /></Fragment>
+  <SiteHeader />
+
+  <main>
+    <!-- ── HERO ───────────────────────────── -->
+    <section class="relative overflow-hidden">
+      <div class="dot-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+      <div
+        class="relative mx-auto grid max-w-[1120px] items-center gap-14 px-5 pt-14 pb-16 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:pt-20 lg:pb-24"
+      >
+        <div class="relative">
+          <StarIcon size={20} class="anim-float absolute -top-8 right-16 text-sakura/80" />
+          <StarIcon size={12} class="anim-drift absolute top-24 -left-2 text-night/40" />
+
+          <p class="kicker flex items-center gap-2">
+            <StarIcon size={9} class="text-sakura-ink" />
+            Phanatomcat · 海螺手帐 No.01
+          </p>
+
+          <h1
+            class="mt-5 font-display text-[clamp(2.75rem,6.4vw,4.5rem)] leading-[1.06] tracking-[-0.01em] text-ink"
+          >
+            <span class="block">海螺里</span>
+            <span class="mt-1 block pl-6 sm:pl-12"
+              >住着一只<span class="relative inline-block">猫<svg
+                  class="absolute -bottom-1 left-0 h-2 w-full text-sakura-ink/70"
+                  viewBox="0 0 100 8"
+                  preserveAspectRatio="none"
+                  fill="none"
+                  aria-hidden="true"
+                ><path
+                    d="M1 5.2C17 3 34 2.2 50 2.6c16 .4 32 1.6 49 1.2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"></path></svg
+                ></span><span class="text-sakura-ink">。</span></span
+            >
+          </h1>
+
+          <p class="mt-7 max-w-[27rem] text-[0.9375rem] leading-[1.9] text-ink-soft">
+            轻小说、插画，和一些没头没尾的日常。<br />
+            这里不赶时间——你可以慢慢读，也可以只是路过。
+          </p>
+
+          <div class="mt-9 flex flex-wrap items-center gap-3">
+            <Button href="#posts">读点什么</Button>
+            <Button href="#about" variant="ghost">关于我</Button>
+          </div>
+
+          <p class="mt-8 flex items-center gap-2 text-[0.75rem] text-ink-mute">
+            <span class="h-px w-8 bg-line"></span>
+            24 篇文章 · 12 个标签 · 上次更新 <time class="font-latin">2026.02.11</time>
+          </p>
+        </div>
+
+        <!-- 头像：圆形贴纸 + 胶带 -->
+        <div class="relative flex justify-center lg:justify-end">
+          <div class="relative w-[280px] sm:w-[320px]">
+            <div
+              class="absolute -top-7 left-1/2 h-[300px] w-[252px] -translate-x-1/2 -rotate-[4deg] rounded-[34px] border-[1.5px] border-line bg-gradient-to-br from-sakura/50 via-surface to-mint/35 shadow-[0_26px_54px_-28px_rgba(108,92,231,0.5)] sm:h-[338px] sm:w-[286px]"
+              aria-hidden="true">
+            </div>
+
+            <svg
+              class="absolute -top-12 -right-6 h-20 w-20 text-sakura-ink/35"
+              viewBox="0 0 64 64"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M41 23a9 9 0 1 0-9 9 15 15 0 1 0 15-15 22 22 0 1 0 22 22"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"></path>
+            </svg>
+
+            <div
+              class="relative overflow-hidden rounded-full border-[6px] border-surface bg-sakura/25 shadow-[0_30px_60px_-32px_rgba(108,92,231,0.55)]"
+            >
+              <img
+                src="/images/avatar.jpg"
+                alt="海螺兽头像：趴在壳里的灰发少女"
+                width="640"
+                height="640"
+                class="h-[280px] w-full object-cover sm:h-[320px]"
+                style="object-position: 50% 46%"
+              />
+            </div>
+
+            <StickerTape class="-top-4 left-1/2 ml-[-48px]" rotate={-6} width={96} />
+            <SpeechBubble class="absolute -bottom-7 -left-6 w-[13rem] sm:-left-12"
+              >今天也不想动…</SpeechBubble
+            >
+          </div>
+        </div>
+      </div>
+
+      <HandDivider variant="wave" class="opacity-80" />
+    </section>
+
+    <!-- ── 01 令牌 ────────────────────────── -->
+    <section class="mx-auto max-w-[1120px] px-5 pt-20 sm:px-8 lg:px-10">
+      <div class="grid gap-12 lg:grid-cols-[1fr_1fr]">
+        <div>
+          <p class="kicker">01 / Tokens</p>
+          <h2 class="mt-3 font-display text-[1.75rem] text-ink">颜色与字型</h2>
+          <p class="mt-3 text-[0.875rem] leading-[1.8] text-ink-soft">
+            浅色模式：粉与薄荷只做填充，文字压力交给墨色与紫。深色模式整体反转，粉薄荷可直接当文字用。
+          </p>
+
+          <div class="mt-7 grid grid-cols-4 gap-3 sm:grid-cols-8 lg:grid-cols-4">
+            {
+              swatches.map((s) => (
+                <div>
+                  <div
+                    class:list={[
+                      'h-12 rounded-[14px] border-[1.5px] border-line shadow-[2px_3px_0_rgba(43,42,51,0.06)]',
+                      s.cls,
+                    ]}
+                  />
+                  <p class="mt-1.5 font-latin text-[0.6875rem] text-ink">{s.name}</p>
+                  <p class="text-[0.625rem] text-ink-mute">{s.note}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-col justify-center gap-5 border-t-[1.5px] border-dashed border-line pt-8 lg:border-t-0 lg:border-l-[1.5px] lg:pt-0 lg:pl-12">
+          <div>
+            <p class="kicker">Display / 文楷</p>
+            <p class="mt-1.5 font-display text-[1.625rem] leading-snug text-ink">海螺里，住着一只猫</p>
+          </div>
+          <div>
+            <p class="kicker">Body / 无衬线</p>
+            <p class="mt-1.5 text-[0.9375rem] leading-[1.9] text-ink-soft">
+              正文保持 17px / 1.85 行高 / 34–38 字行宽，不加装饰，只做排版。
+            </p>
+          </div>
+          <div class="flex flex-wrap items-end gap-6">
+            <div>
+              <p class="kicker">Latin / Quicksand</p>
+              <p class="mt-1.5 font-latin text-[1.0625rem] tracking-[0.14em] text-ink">PHANATOMCAT 01</p>
+            </div>
+            <div>
+              <p class="kicker">Mono</p>
+              <p class="mt-1.5 font-mono text-[0.8125rem] text-ink-soft">npm run dev</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 02 文章卡片 ─────────────────────── -->
+    <section id="posts" class="mx-auto max-w-[1120px] scroll-mt-24 px-5 pt-24 sm:px-8 lg:px-10">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="kicker">02 / Cards</p>
+          <h2 class="mt-3 font-display text-[1.75rem] text-ink">最近写下的</h2>
+        </div>
+        <a
+          href="/posts"
+          class="text-[0.8125rem] text-ink-soft underline decoration-sakura-ink/60 decoration-wavy decoration-[1.5px] underline-offset-[6px] transition hover:text-ink"
+        >
+          全部文章 →
+        </a>
+      </div>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    </section>
+
+    <!-- ── 03 组件 ────────────────────────── -->
+    <section class="mx-auto max-w-[1120px] px-5 pt-24 sm:px-8 lg:px-10">
+      <p class="kicker">03 / Pieces</p>
+      <h2 class="mt-3 font-display text-[1.75rem] text-ink">零件</h2>
+
+      <div class="mt-8 grid gap-6 lg:grid-cols-3">
+        <div class="card-hand p-6">
+          <p class="kicker">Button</p>
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            <Button size="sm">读点什么</Button>
+            <Button size="sm" variant="ghost">关于我</Button>
+            <Button size="sm" variant="tape">订阅</Button>
+          </div>
+          <p class="mt-4 text-[0.75rem] leading-relaxed text-ink-mute">
+            主按钮实心紫、贴纸按钮奶油底，hover 只做 1–2px 上浮与硬影加深。
+          </p>
+        </div>
+
+        <div class="card-hand p-6">
+          <p class="kicker">Pill & Bubble</p>
+          <div class="mt-4 flex flex-wrap gap-1.5">
+            <TagPill name="日常" tone="sakura" count={12} />
+            <TagPill name="薄荷" tone="mint" count={7} />
+            <TagPill name="轻小说" tone="night" count={9} />
+            <TagPill name="随笔" />
+          </div>
+          <div class="relative mt-6">
+            <SpeechBubble class="max-w-none">「今天的进度：写了三行，删了五行。」</SpeechBubble>
+          </div>
+        </div>
+
+        <div class="card-hand p-6">
+          <p class="kicker">Tape & Divider</p>
+          <div class="relative mt-8 h-24">
+            <div class="absolute inset-x-0 top-4 h-16 rounded-[16px] border-[1.5px] border-dashed border-line"></div>
+            <StickerTape class="top-0 left-6" rotate={-7} width={80} />
+            <StickerTape class="top-0 left-28" rotate={5} width={64} tone="sakura" />
+          </div>
+          <HandDivider variant="spiral" class="mt-6" />
+          <p class="mt-4 text-[0.75rem] leading-relaxed text-ink-mute">
+            胶带用于「固定」浮起的东西：卡片角、头像、订阅卡，绝不出现在正文里。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 04 正文样张 ─────────────────────── -->
+    <section id="about" class="mx-auto mt-24 max-w-[1120px] scroll-mt-24 px-5 sm:px-8 lg:px-10">
+      <div class="flex justify-center">
+        <HandDivider variant="spiral" class="mb-2 w-full max-w-[42rem]" />
+      </div>
+
+      <article class="mx-auto mt-10 max-w-[42rem]">
+        <p class="kicker">04 / Reading</p>
+        <h1 class="mt-3 font-display text-[2rem] leading-[1.35] text-ink">海螺里的第一封信</h1>
+        <div class="mt-4 flex items-center gap-3 font-latin text-[0.8125rem] text-ink-mute">
+          <time>2026.02.11</time>
+          <span class="h-1 w-1 rounded-full bg-ink-mute/50"></span>
+          <span>4 分钟</span>
+          <span class="h-1 w-1 rounded-full bg-ink-mute/50"></span>
+          <TagPill name="日常" tone="sakura" />
+        </div>
+
+        <div class="mt-8 border-l-[2.5px] border-sakura pl-5 font-display text-[1.0625rem] leading-[1.9] text-ink">
+          正文区从此不再出现星屑。装饰留在页边，文字自己会发光。
+        </div>
+
+        <div class="prose-hand mt-8">
+          <p>
+            搬进这只壳的第七天，我决定写点什么。窗外那棵不知道名字的树开始掉叶子，一片一片，
+            落得很慢，像有人在替它数数。猫趴在窗台上，尾巴尖一抖一抖——它大概也在数，只是数到三就放弃了。
+          </p>
+          <p>
+            我打开空白文档，写了三行，删掉五行。<strong>这就是今天的全部进度。</strong>
+          </p>
+
+          <h2>关于「慢」这件事</h2>
+          <p>
+            有人问我为什么不做更「完整」的网站：导航、搜索、评论、订阅弹窗。我说先不要了。
+            这里更像一本摊在桌上的手帐，翻到哪页算哪页。你也可以看看<a href="#posts">最近写下的东西</a>，
+            或者干脆什么都不点。
+          </p>
+
+          <blockquote>
+            「写不出来的时候，就先写一句今天天气不错。天气总是不错的，至少在我们这儿。」
+          </blockquote>
+
+          <ul>
+            <li>给海螺壳内侧贴一圈胶带，防止它掉漆；</li>
+            <li>周六下午不看任何带进度条的东西；</li>
+            <li>猫的生日定在第一次见面的那天，理由充分。</li>
+          </ul>
+
+          <pre><code>const shell = &#123; resident: 'cat', noise: 'rain', done: false &#125;;</code></pre>
+
+          <p>
+            写到这里，天已经暗了。我把台灯调到最暗的那一档，键盘声变得很响。
+            下一封信也许会讲那棵树的品种，也许会讲别的——如果你读到这里，
+            说明你也愿意慢一点。
+          </p>
+        </div>
+
+        <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t-[1.5px] border-dashed border-line pt-6">
+          <div class="flex flex-wrap gap-1.5">
+            <TagPill name="日常" tone="sakura" />
+            <TagPill name="随笔" />
+            <TagPill name="海螺" tone="mint" />
+          </div>
+          <p class="font-latin text-[0.75rem] text-ink-mute">— 完 —</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>

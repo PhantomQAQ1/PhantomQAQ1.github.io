@@ -1,0 +1,27 @@
+---
+import PostCard from '../content/PostCard.astro';
+import Pagination from './Pagination.astro';
+import type { Post } from '../../lib/posts';
+import { toCard } from '../../lib/posts';
+
+interface Props {
+  posts: Post[];
+  page: number;
+  totalPages: number;
+}
+
+const { posts, page, totalPages } = Astro.props;
+const cards = posts.map(toCard);
+const href = (n: number) => (n === 1 ? '/posts/' : `/posts/page/${n}/`);
+---
+
+<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {cards.map((post) => <PostCard post={post} />)}
+</div>
+
+<div class="mt-14 flex flex-col items-center gap-3">
+  <Pagination current={page} total={totalPages} href={href} />
+  <p class="font-latin text-[0.75rem] tracking-[0.14em] text-ink-mute uppercase">
+    Page {String(page).padStart(2, '0')} / {String(totalPages).padStart(2, '0')}
+  </p>
+</div>

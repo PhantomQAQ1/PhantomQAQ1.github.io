@@ -1,0 +1,145 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Button from '../../components/ui/Button.astro';
+import StarIcon from '../../components/ui/StarIcon.astro';
+import StickerTape from '../../components/ui/StickerTape.astro';
+import SpeechBubble from '../../components/ui/SpeechBubble.astro';
+import HandDivider from '../../components/ui/HandDivider.astro';
+
+const now = [
+  { label: '在写', value: '一篇关于「壳」的短篇，第三稿' },
+  { label: '在读', value: '《海的语言》，停在第 160 页' },
+  { label: '在听', value: '雨声白噪音，循环了 41 小时' },
+];
+
+const gear = [
+  { k: '编辑器', v: 'VS Code，字号 15，主题浅色' },
+  { k: '框架', v: 'Astro + Tailwind，零前端框架' },
+  { k: '字体', v: '霞鹜文楷 / Quicksand / 等宽' },
+  { k: '写作用具', v: '一支 0.38 的中性笔和纸胶带' },
+];
+---
+
+<PageLayout
+  title="关于 · Phanatomcat"
+  description="在海螺壳里写东西的人：写小说，也画一点画。这里解释一下我是谁、这个站在做什么。"
+>
+  <section class="mx-auto max-w-[1120px] px-5 pt-14 sm:px-8 lg:px-10">
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+      <div>
+        <p class="kicker flex items-center gap-2">
+          <StarIcon size={9} class="text-sakura-ink" />
+          About
+        </p>
+        <h1 class="mt-4 font-display text-[clamp(2.25rem,4.6vw,3.25rem)] leading-tight text-ink">
+          关于，以及为什么叫海螺
+        </h1>
+        <p class="mt-5 max-w-[34rem] text-[0.9375rem] leading-[1.95] text-ink-soft">
+          这里是 Phanatomcat，一个不赶时间的个人博客。写小说、写随笔、偶尔画两张画，
+          然后把它们放进一个壳里，等人路过的时候敲一下。
+        </p>
+      </div>
+
+      <div class="relative mx-auto w-[220px] shrink-0 lg:mx-0">
+        <div class="overflow-hidden rounded-full border-[6px] border-surface bg-sakura/25 shadow-[0_28px_54px_-30px_rgba(108,92,231,0.55)]">
+          <img
+            src="/images/avatar.jpg"
+            alt="海螺兽：趴在灰色海螺壳里的灰发少女"
+            width="640"
+            height="640"
+            class="h-[208px] w-full object-cover"
+            style="object-position: 50% 46%"
+          />
+        </div>
+        <StickerTape class="-top-3 left-1/2 ml-[-34px]" rotate={-7} width={68} />
+        <SpeechBubble class="absolute -bottom-8 -left-10 hidden w-[11rem] sm:block"
+          >就是我。</SpeechBubble
+        >
+      </div>
+    </div>
+  </section>
+
+  <HandDivider variant="wave" class="mx-auto mt-16 max-w-[1120px] px-5 opacity-70 sm:px-8 lg:px-10" />
+
+  <section class="mx-auto max-w-[1120px] px-5 pt-12 sm:px-8 lg:px-10">
+    <div class="prose-hand max-w-[40rem]" data-pagefind-body>
+      <h2>为什么叫海螺</h2>
+      <p>
+        因为海螺壳是一个很好的比喻。它有一个入口，但不会主动邀请你；它把声音在自己肚子里绕一圈再还给你；
+        它看着脆弱，其实很硬。写东西的地方差不多就是这个样子。
+      </p>
+      <p>
+        还有一个更直接的原因：我养的那只猫，第一次见面的时候正趴在一只灰色的壳里，只露出一双半睁的眼睛。
+        那天的照片后来成了这个站的头像。
+      </p>
+
+      <h2>这个站在做什么</h2>
+      <p>
+        三个栏目：<strong>小说</strong>、<strong>随笔</strong>、<strong>日志</strong>。
+        小说是想讲的故事，随笔是忽然想到的一句话，日志是今天发生了什么。
+      </p>
+      <p>
+        没有评论、没有弹窗、没有推送。想看新文章，你可以用
+        <a href="/rss.xml">RSS</a>。这个站也不统计你，除了服务器自己记的访问日志。
+      </p>
+
+      <blockquote>「壳不是用来躲的，是用来把音量调小的。」</blockquote>
+
+      <h2>一些原则</h2>
+      <ul>
+        <li>正文区不出现任何装饰，装饰只待在边角和首屏；</li>
+        <li>不做「敬请期待」的页面，没写就是没写；</li>
+        <li>深色模式不是反色，是重新配一次色；</li>
+        <li>动效只做 1–3px，不抢文字的注意力。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 现在 -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-16 sm:px-8 lg:px-10">
+    <div class="grid gap-5 sm:grid-cols-3">
+      {
+        now.map((item) => (
+          <div class="card-hand p-6">
+            <p class="kicker">{item.label}</p>
+            <p class="mt-3 font-display text-[1.0625rem] leading-relaxed text-ink">{item.value}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 装备 -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-6 sm:px-8 lg:px-10">
+    <div class="card-hand mt-5 p-7 sm:p-8">
+      <p class="kicker">Toolbox</p>
+      <h2 class="mt-3 font-display text-[1.375rem] text-ink">用什么做的</h2>
+      <dl class="mt-5 divide-y divide-line">
+        {
+          gear.map((item) => (
+            <div class="flex flex-wrap items-baseline justify-between gap-2 py-3">
+              <dt class="text-[0.8125rem] text-ink-mute">{item.k}</dt>
+              <dd class="text-[0.875rem] text-ink-soft">{item.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- 联系 -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-16 sm:px-8 lg:px-10">
+    <div class="relative overflow-hidden rounded-[26px] border-[1.5px] border-line bg-sunken/60 p-8 sm:p-10">
+      <StarIcon size={15} class="absolute top-7 right-9 text-night/40" />
+      <p class="kicker">Say hi</p>
+      <h2 class="mt-3 font-display text-[1.5rem] text-ink">想说话的话</h2>
+      <p class="mt-3 max-w-[32rem] text-[0.875rem] leading-[1.9] text-ink-soft">
+        没有留言板，但邮件一直开着。说一句「看过了」也可以，我不一定会回，但会看。
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <Button href="mailto:hello@phanatomcat.example.com" variant="tape">写信给我</Button>
+        <Button href="/posts" variant="ghost">先去看看文章</Button>
+      </div>
+    </div>
+  </section>
+</PageLayout>

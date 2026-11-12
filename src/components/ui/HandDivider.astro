@@ -1,0 +1,36 @@
+---
+interface Props {
+  variant?: 'wave' | 'spiral';
+  class?: string;
+}
+
+const { variant = 'wave', class: cls = '' } = Astro.props;
+---
+
+{
+  variant === 'wave' ? (
+    <div class:list={['w-full text-line', cls]} aria-hidden="true">
+      <svg class="h-6 w-full" viewBox="0 0 1440 24" preserveAspectRatio="none" fill="none">
+        <path
+          d="M0 12Q90 0 180 12T360 12T540 12T720 12T900 12T1080 12T1260 12T1440 12"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+    </div>
+  ) : (
+    <div class:list={['flex items-center gap-5 text-line', cls]} aria-hidden="true">
+      <span class="h-px flex-1 bg-gradient-to-r from-transparent to-line" />
+      <svg class="h-6 w-6 shrink-0 text-sakura-ink/70" viewBox="0 0 64 64" fill="none">
+        <path
+          d="M41 23a9 9 0 1 0-9 9 15 15 0 1 0 15-15 22 22 0 1 0 22 22"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span class="h-px flex-1 bg-gradient-to-l from-transparent to-line" />
+    </div>
+  )
+}

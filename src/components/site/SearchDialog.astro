@@ -1,0 +1,157 @@
+---
+/**
+ * 搜索入口 + 弹窗。索引由 Pagefind 在构建后生成（/pagefind/*）。
+ * 索引缺失时（例如 dev 模式）只提示，不报错。
+ */
+---
+
+<button
+  type="button"
+  data-search-open
+  aria-label="搜索站内内容"
+  aria-haspopup="dialog"
+  class="inline-flex h-8 w-8 items-center justify-center rounded-full border-[1.5px] border-line text-ink-soft transition hover:-translate-y-px hover:border-night/50 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-night/40"
+>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="6.5"></circle>
+    <path d="m16 16 4.5 4.5"></path>
+  </svg>
+</button>
+
+<dialog
+  data-search-dialog
+  aria-label="站内搜索"
+  class="m-auto w-[min(92vw,34rem)] rounded-[20px] border-[1.5px] border-line bg-surface p-0 text-ink shadow-[0_24px_60px_-24px_rgba(108,92,231,0.45)] backdrop:bg-ink/40 backdrop:backdrop-blur-[2px]"
+>
+  <div class="border-b border-line/80 px-5 py-4">
+    <label for="search-input" class="kicker text-[0.625rem]">SEARCH · 搜索</label>
+    <div class="mt-2 flex items-center gap-2">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="shrink-0 text-ink-mute" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="m16 16 4.5 4.5"></path>
+      </svg>
+      <input
+        id="search-input"
+        type="search"
+        autocomplete="off"
+        placeholder="搜文章标题、游戏名、正文……"
+        class="w-full bg-transparent text-[0.9375rem] text-ink placeholder:text-ink-mute focus:outline-none"
+      />
+      <button
+        type="button"
+        data-search-close
+        aria-label="关闭搜索"
+        class="shrink-0 rounded-full px-2 py-1 text-[0.75rem] text-ink-mute transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-night/40"
+      >Esc</button>
+    </div>
+  </div>
+
+  <div class="max-h-[60vh] overflow-y-auto px-2 py-2">
+    <p data-search-status class="px-3 py-3 text-[0.8125rem] text-ink-mute" role="status" aria-live="polite">
+      输入关键词开始搜索。
+    </p>
+    <ul data-search-results class="space-y-1"></ul>
+  </div>
+
+  <div class="flex items-center justify-between border-t border-line/80 px-5 py-2.5">
+    <p class="text-[0.6875rem] text-ink-mute">索引来自 Pagefind，纯静态、无后端</p>
+    <button
+      type="button"
+      data-search-close
+      class="rounded-full border-[1.5px] border-line px-3 py-1 text-[0.75rem] text-ink-soft transition hover:border-night/50 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-night/40"
+    >关闭</button>
+  </div>
+</dialog>
+
+<script>
+  type PagefindResult = { url: string; excerpt: string; meta: { title?: string } };
+  type Pagefind = {
+    options: (o: Record<string, unknown>) => Promise<void>;
+    search: (q: string) => Promise<{ results: { data: () => Promise<PagefindResult> }[] }>;
+  };
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-search-dialog]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-search-open]');
+  const input = dlg?.querySelector<HTMLInputElement>('#search-input');
+  const list = dlg?.querySelector<HTMLUListElement>('[data-search-results]');
+  const status = dlg?.querySelector<HTMLParagraphElement>('[data-search-status]');
+
+  let pagefind: Pagefind | null = null;
+  let failed = false;
+
+  async function loadIndex() {
+    if (pagefind || failed) return;
+    try {
+      // 运行时才存在的构建产物，用变量让 Vite 无法静态解析
+      const indexPath = '/pagefind/pagefind.js';
+      pagefind = (await import(/* @vite-ignore */ indexPath)) as Pagefind;
+      await pagefind.options({ excerptLength: 28 });
+    } catch {
+      failed = true;
+      if (status) status.textContent = '搜索索引尚未生成：执行一次 npm run build 之后即可使用。';
+    }
+  }
+
+  function renderEmpty(text: string) {
+    if (list) list.replaceChildren();
+    if (status) status.textContent = text;
+  }
+
+  async function run(query: string) {
+    const q = query.trim();
+    if (!q) return renderEmpty('输入关键词开始搜索。');
+    if (!pagefind) {
+      await loadIndex();
+      if (!pagefind) return;
+    }
+    const found = await pagefind.search(q);
+    const items = await Promise.all(found.results.slice(0, 8).map((r) => r.data()));
+    if (!items.length) return renderEmpty(`没有找到与「${q}」相关的内容。`);
+
+    if (status) status.textContent = `找到 ${found.results.length} 条结果`;
+    if (!list) return;
+    list.replaceChildren(
+      ...items.map((item) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.className =
+          'block rounded-xl px-3 py-2.5 transition hover:bg-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-night/40';
+        const h = document.createElement('p');
+        h.className = 'text-[0.875rem] text-ink';
+        h.textContent = item.meta.title ?? item.url;
+        const p = document.createElement('p');
+        p.className = 'mt-1 line-clamp-2 text-[0.75rem] leading-relaxed text-ink-mute';
+        p.innerHTML = item.excerpt.replace(/<mark>/g, '<mark class="bg-tape/70 text-ink">');
+        a.append(h, p);
+        li.append(a);
+        return li;
+      }),
+    );
+  }
+
+  let timer: number | undefined;
+  input?.addEventListener('input', () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => void run(input.value), 220);
+  });
+
+  openBtn?.addEventListener('click', async () => {
+    dlg?.showModal();
+    await loadIndex();
+    input?.focus();
+  });
+
+  dlg?.querySelectorAll('[data-search-close]').forEach((btn) => {
+    btn.addEventListener('click', () => dlg.close());
+  });
+
+  dlg?.addEventListener('click', (event) => {
+    if (event.target === dlg) dlg.close();
+  });
+
+  dlg?.addEventListener('close', () => {
+    if (input) input.value = '';
+    renderEmpty('输入关键词开始搜索。');
+  });
+</script>

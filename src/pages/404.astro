@@ -1,0 +1,71 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Button from '../components/ui/Button.astro';
+import StarIcon from '../components/ui/StarIcon.astro';
+import SpeechBubble from '../components/ui/SpeechBubble.astro';
+import { getPosts, toCard } from '../lib/posts';
+
+const posts = await getPosts();
+const suggestions = posts.slice(0, 2).map(toCard);
+---
+
+<PageLayout title="迷路了 · Phanatomcat" description="这一页不存在——不过壳里还有别的入口。" noindex>
+  <section class="relative mx-auto flex min-h-[74vh] max-w-[1120px] flex-col items-center justify-center px-5 py-16 text-center sm:px-8">
+    <div class="dot-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+    <p class="kicker relative flex items-center gap-2">
+      <StarIcon size={9} class="text-sakura-ink" />
+      Error 404
+    </p>
+
+    <p class="relative mt-6 font-latin text-[clamp(5rem,18vw,10rem)] leading-none font-bold tracking-[-0.02em] text-ink/90">
+      4<span class="text-sakura-ink">0</span>4
+    </p>
+
+    <h1 class="relative mt-2 font-display text-[clamp(1.5rem,3.4vw,2.125rem)] text-ink">
+      这里没有东西，大概
+    </h1>
+
+    <p class="relative mt-4 max-w-[26rem] text-[0.9375rem] leading-[1.9] text-ink-soft">
+      你要找的页面可能被折进了抽屉，也可能从来没有存在过。
+      不过别急，壳里还有别的入口。
+    </p>
+
+    <div class="relative mt-3">
+      <SpeechBubble class="w-[15rem] rotate-[-1.5deg] text-center">要不……随便看看？</SpeechBubble>
+    </div>
+
+    <div class="relative mt-8 flex flex-wrap items-center justify-center gap-3">
+      <Button href="/">回到首页</Button>
+      <Button href="/posts" variant="ghost">全部文章</Button>
+    </div>
+
+    <div class="relative mt-14 w-full max-w-[40rem] text-left">
+      <p class="kicker flex items-center gap-2">
+        <span class="h-px w-6 bg-line" />
+        也许你想看
+      </p>
+      <ul class="mt-4 divide-y divide-line border-y border-line">
+        {
+          suggestions.map((post) => (
+            <li>
+              <a
+                href={`/posts/${post.slug}`}
+                class="group flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3.5 transition"
+              >
+                <span class="font-display text-[1rem] text-ink transition group-hover:text-night-deep">
+                  {post.title}
+                </span>
+                <span class="font-latin text-[0.75rem] text-ink-mute">
+                  {post.date} · {post.readingTime} 分钟
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <StarIcon size={14} class="relative mt-16 text-sakura/80" />
+  </section>
+</PageLayout>

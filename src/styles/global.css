@@ -1,0 +1,316 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── 语义令牌：浅色 ───────────────────────────── */
+:root {
+  --paper: #fff9f2;
+  --surface: #fffdf9;
+  --surface-sunken: #fbf1e6;
+  --ink: #2b2a33;
+  --ink-soft: #5c5a66;
+  --ink-mute: #6e6b7b;
+  --line: #e9dfd4;
+  --sakura: #ffb7c5;
+  --sakura-ink: #c2436a;
+  --mint: #a8e6cf;
+  --mint-ink: #2f8268;
+  /* 徽章专用：在 30% 薄荷/樱粉底上仍满足 4.5:1 */
+  --mint-badge: #22705a;
+  --sakura-badge: #a83458;
+  --night: #6c5ce7;
+  --night-deep: #5443c9;
+  --on-night: #fffdf9;
+  --tape: #ffe8a3;
+  --tint: 108 92 231;
+}
+
+/* ── 语义令牌：深色 ───────────────────────────── */
+.dark {
+  --paper: #14121c;
+  --surface: #1c1926;
+  --surface-sunken: #241f33;
+  --ink: #f3eef7;
+  --ink-soft: #c9c2d6;
+  --ink-mute: #8d859e;
+  --line: #332c45;
+  --sakura: #ffa8bc;
+  --sakura-ink: #ffa8bc;
+  --mint: #8fe0c4;
+  --mint-ink: #8fe0c4;
+  --mint-badge: #8fe0c4;
+  --sakura-badge: #ffa8bc;
+  --night: #a79bff;
+  --night-deep: #b6acff;
+  --on-night: #17141f;
+  --tape: #3a3350;
+  --tint: 0 0 0;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-line: var(--line);
+  --color-sakura: var(--sakura);
+  --color-sakura-ink: var(--sakura-ink);
+  --color-mint: var(--mint);
+  --color-mint-ink: var(--mint-ink);
+  --color-mint-badge: var(--mint-badge);
+  --color-sakura-badge: var(--sakura-badge);
+  --color-night: var(--night);
+  --color-night-deep: var(--night-deep);
+  --color-on-night: var(--on-night);
+  --color-tape: var(--tape);
+
+  --font-display: "LXGW WenKai", "KaiTi", "STKaiti", "Noto Serif SC", serif;
+  --font-body: "Noto Sans SC", system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-latin: "Quicksand", "LXGW WenKai", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+  --radius-card: 20px;
+  --radius-blob: 28px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--sakura) 62%, transparent);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--night);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* 手绘卡片：实线偏移 + 染色柔光 */
+  .card-hand {
+    position: relative;
+    border: 1.5px solid var(--line);
+    border-radius: 20px 26px 18px 24px;
+    background: var(--surface);
+    box-shadow:
+      2px 3px 0 color-mix(in srgb, var(--ink) 7%, transparent),
+      0 18px 40px -22px rgb(var(--tint) / 0.3);
+    transition:
+      transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.22s ease;
+  }
+
+  .dark .card-hand {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      2px 3px 0 rgb(0 0 0 / 0.5),
+      0 18px 40px -22px rgb(0 0 0 / 0.6);
+  }
+
+  .card-hand:hover {
+    transform: translate(-1px, -2px);
+    border-color: color-mix(in srgb, var(--sakura) 45%, var(--line));
+    box-shadow:
+      3px 5px 0 color-mix(in srgb, var(--ink) 8%, transparent),
+      0 26px 48px -24px rgb(var(--tint) / 0.42);
+  }
+
+  .kicker {
+    font-family: var(--font-latin);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* 点阵底纹，只在 Hero 使用 */
+  .dot-grid {
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--ink) 13%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 18px 18px;
+    mask-image: radial-gradient(ellipse 70% 60% at 22% 18%, #000 5%, transparent 72%);
+  }
+
+  /* 45° 斜纹色块 */
+  .stripe-block {
+    background-image: repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--sakura) 70%, transparent) 0 2px,
+      transparent 2px 9px
+    );
+    background-color: color-mix(in srgb, var(--night) 7%, transparent);
+  }
+
+  /* 胶带 */
+  .tape {
+    background: color-mix(in srgb, var(--tape) 80%, transparent);
+    clip-path: polygon(0 7%, 100% 0, 100% 93%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25);
+  }
+
+  .dark .tape {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+
+  /* 正文排版：唯一允许「干净」的区域 */
+  .prose-hand {
+    font-size: 1.0625rem;
+    line-height: 1.9;
+    color: var(--ink-soft);
+  }
+
+  .prose-hand > * + * {
+    margin-top: 1.4em;
+  }
+
+  .prose-hand strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .prose-hand a {
+    color: var(--night-deep);
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--night) 45%, transparent);
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.2s ease;
+  }
+
+  .prose-hand a:hover {
+    text-decoration-color: var(--sakura-ink);
+  }
+
+  .prose-hand h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-top: 2.2em;
+  }
+
+  .prose-hand h2::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 0.6rem;
+    vertical-align: middle;
+    border-radius: 2px;
+    background: var(--sakura);
+    transform: rotate(12deg);
+  }
+
+  .prose-hand blockquote {
+    border-left: 2.5px solid var(--sakura);
+    padding: 0.1em 0 0.1em 1.1em;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    color: var(--ink);
+  }
+
+  .prose-hand pre {
+    background: var(--surface-sunken);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: var(--ink);
+  }
+
+  .prose-hand :not(pre) > code {
+    background: var(--surface-sunken);
+    border-radius: 6px;
+    padding: 0.12em 0.4em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--sakura-ink);
+  }
+
+  .prose-hand ul {
+    list-style: none;
+    padding-left: 1.15em;
+  }
+
+  .prose-hand ul > li {
+    position: relative;
+  }
+
+  .prose-hand ul > li::before {
+    content: "✦";
+    position: absolute;
+    left: -1.15em;
+    top: 0.05em;
+    font-size: 0.8em;
+    color: var(--sakura);
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(calc(var(--r, 0deg) + 4deg));
+  }
+}
+
+@keyframes drift {
+  0% {
+    opacity: 0.25;
+    transform: translate(0, 0) scale(0.9);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(6px, -10px) scale(1);
+  }
+  100% {
+    opacity: 0.25;
+    transform: translate(0, 0) scale(0.9);
+  }
+}
+
+.anim-float {
+  animation: float-y 16s ease-in-out infinite;
+}
+
+.anim-drift {
+  animation: drift 14s ease-in-out infinite;
+}

@@ -1,0 +1,213 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import SectionHead from '../../components/site/SectionHead.astro';
+import GameCard from '../../components/games/GameCard.astro';
+import GameStats from '../../components/games/GameStats.astro';
+import GameFilter from '../../components/games/GameFilter.astro';
+import GameEmpty from '../../components/games/GameEmpty.astro';
+import StarIcon from '../../components/ui/StarIcon.astro';
+import SpeechBubble from '../../components/ui/SpeechBubble.astro';
+import HandDivider from '../../components/ui/HandDivider.astro';
+import {
+  games,
+  computeStats,
+  pickSpotlight,
+  activeGenres,
+  STATUS_ORDER,
+} from '../../data/games';
+
+const stats = computeStats(games);
+const spotlight = pickSpotlight(games, 3);
+const genres = activeGenres(games);
+
+// 筛选按钮上的数量
+const counts: Record<string, number> = { all: games.length };
+for (const status of STATUS_ORDER) {
+  counts[status] = games.filter((game) => game.status === status).length;
+}
+---
+
+<PageLayout
+  title="我的游戏空间 · Phanatomcat"
+  description="我平时玩的游戏和一句话感想：不是攻略站，只是一份会慢慢变长的游戏记录。"
+>
+  <!-- ── Hero ─────────────────────────────── -->
+  <section class="relative overflow-hidden">
+    <div class="dot-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+    <div class="relative mx-auto max-w-[1120px] px-5 pt-14 pb-10 sm:px-8 lg:px-10 lg:pt-16">
+      <p class="kicker flex items-center gap-2">
+        <StarIcon size={9} class="text-sakura-ink" />
+        Game shelf · 游戏记录
+      </p>
+
+      <div class="mt-4 flex flex-wrap items-end gap-x-6 gap-y-3">
+        <h1 class="font-display text-[clamp(2.25rem,4.8vw,3.375rem)] leading-tight text-ink">
+          我的游戏<span class="relative inline-block">空间<svg
+            class="absolute -bottom-1 left-0 h-2 w-full text-sakura-ink/70"
+            viewBox="0 0 100 8"
+            preserveAspectRatio="none"
+            fill="none"
+            aria-hidden="true"
+          ><path
+              d="M1 5.2C17 3 34 2.2 50 2.6c16 .4 32 1.6 49 1.2"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path></svg
+          ></span>
+        </h1>
+
+        <!-- 像素星星 + 猫爪：只在 Hero 出现 -->
+        <svg class="anim-float mb-3 h-7 w-7 text-night/50" viewBox="0 0 21 21" aria-hidden="true">
+          <g fill="currentColor">
+            <rect x="8" y="0" width="5" height="5" /><rect x="0" y="8" width="5" height="5" /><rect
+              x="16"
+              y="8"
+              width="5"
+              height="5"></rect><rect x="8" y="16" width="5" height="5" /><rect
+              x="8"
+              y="8"
+              width="5"
+              height="5"></rect>
+          </g>
+        </svg>
+
+        <svg class="mb-2 h-8 w-8 text-sakura-ink/45" viewBox="0 0 32 32" aria-hidden="true">
+          <g fill="currentColor" fill-opacity="0.55">
+            <ellipse cx="16" cy="21" rx="6.4" ry="5.4" />
+            <ellipse cx="7.6" cy="14" rx="2.6" ry="3.2" />
+            <ellipse cx="13.4" cy="10.6" rx="2.5" ry="3.2" />
+            <ellipse cx="19.4" cy="10.6" rx="2.5" ry="3.2" />
+            <ellipse cx="24.8" cy="14" rx="2.6" ry="3.2" />
+          </g>
+        </svg>
+      </div>
+
+      <p class="mt-5 max-w-[36rem] text-[0.9375rem] leading-[1.95] text-ink-soft">
+        这里放我平时在玩的游戏，以及一两句没有营养的感想。不是攻略，不追新作，也没有评分标准——
+        星星只代表「我当时有多喜欢」。
+      </p>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <p class="flex items-center gap-2 text-[0.75rem] text-ink-mute">
+          <span class="h-px w-8 bg-line"></span>
+          {games.length} 款游戏 · {genres.length} 个类型 · 持续更新
+        </p>
+
+        <div class="relative mt-2 ml-auto w-full sm:mt-0 sm:w-auto">
+          <SpeechBubble class="w-full text-balance rotate-[-1.2deg] sm:w-[15rem]">当前进度：等待，我随时随地在等待。</SpeechBubble>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <HandDivider variant="wave" class="mx-auto max-w-[1120px] px-5 opacity-70 sm:px-8 lg:px-10" />
+
+  <!-- ── 统计 ─────────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-12 sm:px-8 lg:px-10">
+    <GameStats stats={stats} />
+  </section>
+
+  <!-- ── 最近在玩 ─────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-16 sm:px-8 lg:px-10">
+    <SectionHead kicker="01 / Now playing" title="最近在玩" />
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {spotlight.map((game) => <GameCard game={game} />)}
+    </div>
+  </section>
+
+  <!-- ── 全部游戏 ─────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-16 sm:px-8 lg:px-10">
+    <SectionHead kicker="02 / Library" title="游戏库" />
+
+    <GameFilter counts={counts} class="mt-8" />
+
+    <div
+      class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      data-grid
+      data-pagefind-body
+      data-pagefind-filter="section:games"
+    >
+      {games.map((game) => <GameCard game={game} />)}
+    </div>
+
+    <GameEmpty class="mt-6" />
+
+    <p class="mt-8 text-[0.75rem] leading-relaxed text-ink-mute">
+      封面全部是渐变 + 字形占位，没有使用任何官方封面、角色图或 Logo；
+      游戏名若与现实作品重名，纯属虚构。
+    </p>
+  </section>
+
+  <!-- ── 说明 ─────────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-16 sm:px-8 lg:px-10">
+    <div class="relative overflow-hidden rounded-[26px] border-[1.5px] border-line bg-sunken/60 p-8 sm:p-10">
+      <StarIcon size={14} class="absolute top-7 right-9 text-night/40" />
+
+      <p class="kicker">How it works</p>
+      <h2 class="mt-3 font-display text-[1.375rem] text-ink">这个页面是怎么来的</h2>
+      <ul class="mt-4 space-y-2 text-[0.875rem] leading-[1.9] text-ink-soft">
+        <li>· 数据在 <code class="font-mono text-[0.8125rem] text-sakura-ink">src/data/games.ts</code>，纯 TypeScript 对象，没有数据库。</li>
+        <li>· 筛选在浏览器里完成，不刷新、不发请求；按钮支持键盘操作。</li>
+        <li>· 状态用「颜色 + 形状 + 文字」三重区分，色弱也能分辨。</li>
+        <li>· 所有动效都压在 1–2px 内，并跟随系统的减少动态效果设置。</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  type State = { status: string; genre: string };
+
+  const state: State = { status: 'all', genre: 'all' };
+
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-grid] [data-game]')];
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const countEl = document.querySelector<HTMLElement>('[data-count]');
+  const emptyEl = document.querySelector<HTMLElement>('[data-empty]');
+  const hintEl = document.querySelector<HTMLElement>('[data-empty-hint]');
+  const resetEl = document.querySelector<HTMLButtonElement>('[data-reset]');
+
+  const apply = () => {
+    let shown = 0;
+
+    for (const card of cards) {
+      const okStatus = state.status === 'all' || card.dataset.status === state.status;
+      const okGenre = state.genre === 'all' || card.dataset.genre === state.genre;
+      const ok = okStatus && okGenre;
+      card.style.display = ok ? '' : 'none';
+      if (ok) shown += 1;
+    }
+
+    if (countEl) countEl.textContent = `共 ${shown} 款`;
+    if (emptyEl) emptyEl.hidden = shown !== 0;
+    if (hintEl) hintEl.hidden = shown !== 0;
+
+    for (const chip of chips) {
+      const group = chip.dataset.filter as keyof State;
+      const value = chip.dataset.value ?? 'all';
+      chip.setAttribute('aria-pressed', String(state[group] === value));
+    }
+
+    const filtered = state.status !== 'all' || state.genre !== 'all';
+    if (resetEl) resetEl.hidden = !filtered;
+  };
+
+  for (const chip of chips) {
+    chip.addEventListener('click', () => {
+      const group = chip.dataset.filter as keyof State;
+      const value = chip.dataset.value ?? 'all';
+      state[group] = value;
+      apply();
+    });
+  }
+
+  resetEl?.addEventListener('click', () => {
+    state.status = 'all';
+    state.genre = 'all';
+    apply();
+  });
+
+  apply();
+</script>

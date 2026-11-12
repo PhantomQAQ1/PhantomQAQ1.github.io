@@ -1,0 +1,65 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: cls = '' } = Astro.props;
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  aria-label="切换深色模式"
+  class:list={[
+    'inline-flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-line bg-surface text-ink-soft transition duration-200 hover:-translate-y-px hover:border-sakura-ink hover:text-ink',
+    cls,
+  ]}
+>
+  <svg
+    class="h-[18px] w-[18px] dark:hidden"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+  >
+    <circle cx="12" cy="12" r="4.2"></circle>
+    <path
+      d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"
+    ></path>
+  </svg>
+  <svg
+    class="hidden h-[18px] w-[18px] dark:block"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.6 6.6 0 0 0 10.2 10.2Z"></path>
+    <path d="M17.5 3.6v2M16.5 4.6h2"></path>
+  </svg>
+</button>
+
+<script>
+  const KEY = 'theme';
+
+  function apply(dark: boolean) {
+    document.documentElement.classList.toggle('dark', dark);
+    try {
+      localStorage.setItem(KEY, dark ? 'dark' : 'light');
+    } catch {
+      /* 隐私模式下忽略 */
+    }
+  }
+
+  if (!(window as any).__themeToggleBound) {
+    (window as any).__themeToggleBound = true;
+    document.addEventListener('click', (event) => {
+      const target = (event.target as HTMLElement).closest('[data-theme-toggle]');
+      if (!target) return;
+      apply(!document.documentElement.classList.contains('dark'));
+    });
+  }
+</script>

@@ -1,0 +1,200 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionHead from '../components/site/SectionHead.astro';
+import PostCard from '../components/content/PostCard.astro';
+import TagCloud from '../components/blog/TagCloud.astro';
+import Button from '../components/ui/Button.astro';
+import StarIcon from '../components/ui/StarIcon.astro';
+import StickerTape from '../components/ui/StickerTape.astro';
+import SpeechBubble from '../components/ui/SpeechBubble.astro';
+import HandDivider from '../components/ui/HandDivider.astro';
+import { getPosts, getTags, toCard, formatDate } from '../lib/posts';
+
+const posts = await getPosts();
+const tags = await getTags(posts);
+const latest = posts.slice(0, 3).map(toCard);
+const latestDate = posts[0] ? formatDate(posts[0].data.pubDate) : '—';
+---
+
+<PageLayout
+  title="Phanatomcat · 海螺手帐"
+  description="一只住在海螺里的猫的私人手帐：轻小说、插画，和一些没头没尾的日常。"
+>
+  <!-- ── Hero ─────────────────────────────── -->
+  <section class="relative overflow-hidden">
+    <div class="dot-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+    <div
+      class="relative mx-auto grid max-w-[1120px] items-center gap-14 px-5 pt-14 pb-16 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:pt-20 lg:pb-24"
+    >
+      <div class="relative">
+        <StarIcon size={20} class="anim-float absolute -top-8 right-16 text-sakura/80" />
+        <StarIcon size={12} class="anim-drift absolute top-24 -left-2 text-night/40" />
+
+        <p class="kicker flex items-center gap-2">
+          <StarIcon size={9} class="text-sakura-ink" />
+          Phanatomcat · 海螺手帐 No.01
+        </p>
+
+        <h1
+          class="mt-5 font-display text-[clamp(2.75rem,6.4vw,4.5rem)] leading-[1.06] tracking-[-0.01em] text-ink"
+        >
+          <span class="block">海螺里</span>
+          <span class="mt-1 block pl-6 sm:pl-12"
+            >住着一只<span class="relative inline-block">猫<svg
+                class="absolute -bottom-1 left-0 h-2 w-full text-sakura-ink/70"
+                viewBox="0 0 100 8"
+                preserveAspectRatio="none"
+                fill="none"
+                aria-hidden="true"
+              ><path
+                  d="M1 5.2C17 3 34 2.2 50 2.6c16 .4 32 1.6 49 1.2"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"></path></svg
+              ></span><span class="text-sakura-ink">。</span></span
+          >
+        </h1>
+
+        <p class="mt-7 max-w-[27rem] text-[0.9375rem] leading-[1.9] text-ink-soft">
+          轻小说、插画，和一些没头没尾的日常。<br />
+          这里不赶时间——你可以慢慢读，也可以只是路过。
+        </p>
+
+        <div class="mt-9 flex flex-wrap items-center gap-3">
+          <Button href="/posts">读点什么</Button>
+          <Button href="/about" variant="ghost">关于我</Button>
+        </div>
+
+        <p class="mt-8 flex items-center gap-2 text-[0.75rem] text-ink-mute">
+          <span class="h-px w-8 bg-line"></span>
+          {posts.length} 篇文章 · {tags.length} 个标签 · 上次更新 <time class="font-latin"
+            >{latestDate}</time
+          >
+        </p>
+      </div>
+
+      <!-- 头像：圆形贴纸 + 胶带 -->
+      <div class="relative flex justify-center lg:justify-end">
+        <div class="relative w-[280px] sm:w-[320px]">
+          <div
+            class="absolute -top-9 left-1/2 h-[322px] w-[300px] -translate-x-1/2 -rotate-[5deg] rounded-[36px] border-[1.5px] border-line bg-gradient-to-br from-sakura/55 via-surface to-mint/40 shadow-[0_26px_54px_-28px_rgba(108,92,231,0.5)] sm:h-[368px] sm:w-[344px]"
+            aria-hidden="true">
+          </div>
+
+          <svg
+            class="absolute -top-12 -right-6 h-20 w-20 text-sakura-ink/35"
+            viewBox="0 0 64 64"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M41 23a9 9 0 1 0-9 9 15 15 0 1 0 15-15 22 22 0 1 0 22 22"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"></path>
+          </svg>
+
+          <div
+            class="relative overflow-hidden rounded-full border-[6px] border-surface bg-sakura/25 shadow-[0_30px_60px_-32px_rgba(108,92,231,0.55)]"
+          >
+            <img
+              src="/images/avatar.jpg"
+              alt="海螺兽头像：趴在壳里的灰发少女"
+              width="640"
+              height="640"
+              class="h-[280px] w-full object-cover sm:h-[320px]"
+              style="object-position: 50% 46%"
+            />
+          </div>
+
+          <StickerTape class="-top-4 left-1/2 ml-[-48px]" rotate={-6} width={96} />
+          <SpeechBubble class="absolute -bottom-7 -left-6 w-[13rem] sm:-left-12"
+            >今天也不想动…</SpeechBubble
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <HandDivider variant="wave" class="mx-auto max-w-[1120px] px-5 opacity-70 sm:px-8 lg:px-10" />
+
+  <!-- ── 最近文章 ─────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-20 sm:px-8 lg:px-10">
+    <SectionHead kicker="01 / Recent" title="最近写下的" href="/posts" linkLabel="全部文章" />
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {latest.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+
+  <!-- ── 标签 ─────────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-20 sm:px-8 lg:px-10">
+    <SectionHead kicker="02 / Tags" title="从哪里进去" href="/tags" linkLabel="全部标签" />
+
+    <div class="card-hand mt-8 p-6 sm:p-8">
+      <TagCloud tags={tags} limit={12} />
+      <p class="mt-5 text-[0.8125rem] leading-relaxed text-ink-mute">
+        标签比分类更细一点。分类回答「这是什么」，标签回答「我当时在想什么」。
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 关于 ─────────────────────────────── -->
+  <section class="mx-auto max-w-[1120px] px-5 pt-20 sm:px-8 lg:px-10">
+    <div
+      class="card-hand relative flex flex-col items-start gap-6 overflow-hidden p-7 sm:flex-row sm:items-center sm:p-9"
+    >
+      <div class="relative shrink-0">
+        <div class="overflow-hidden rounded-full border-[5px] border-surface bg-sakura/25">
+          <img
+            src="/images/avatar.jpg"
+            alt=""
+            width="640"
+            height="640"
+            class="h-[86px] w-[86px] object-cover"
+            style="object-position: 50% 46%"
+            loading="lazy"
+          />
+        </div>
+        <StickerTape class="-top-2 -left-3" rotate={-12} width={52} />
+      </div>
+
+      <div class="relative">
+        <p class="kicker">03 / About</p>
+        <p class="mt-2.5 font-display text-[1.25rem] leading-relaxed text-ink">
+          在海螺壳里写东西的人。写小说，也画一点画。
+        </p>
+        <p class="mt-2.5 text-[0.875rem] leading-[1.85] text-ink-soft">
+          白天是普通的人，晚上把电脑亮度调到最低。这里放我写的小说、随手记的日志，和一些不确定要不要发出来的随笔。
+        </p>
+        <a
+          href="/about"
+          class="mt-4 inline-flex items-center gap-1.5 text-[0.8125rem] text-ink-soft underline decoration-sakura-ink/60 decoration-wavy decoration-[1.5px] underline-offset-[6px] transition hover:text-ink"
+        >
+          关于页在这里 →
+        </a>
+      </div>
+
+      <StarIcon size={14} class="absolute top-6 right-7 text-sakura/70" />
+    </div>
+  </section>
+
+  <!-- ── 订阅 ─────────────────────────────── -->
+  <section id="subscribe" class="mx-auto max-w-[1120px] scroll-mt-24 px-5 pt-20 sm:px-8 lg:px-10">
+    <div class="relative overflow-hidden rounded-[26px] border-[1.5px] border-line bg-sunken/60 p-8 sm:p-10">
+      <StarIcon size={16} class="absolute top-7 right-9 text-night/40" />
+      <StarIcon size={9} class="absolute bottom-9 right-20 text-sakura/70" />
+
+      <p class="kicker">04 / Follow</p>
+      <h2 class="mt-3 font-display text-[1.5rem] text-ink">不想每次都点进来看？</h2>
+      <p class="mt-3 max-w-[34rem] text-[0.875rem] leading-[1.9] text-ink-soft">
+        用 RSS 订阅就好。有新文章的时候，你的阅读器会收到一小段摘要——没有推送、没有弹窗、不需要邮箱。
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <Button href="/rss.xml" variant="tape">RSS 订阅</Button>
+        <Button href="/sitemap-index.xml" variant="ghost">Sitemap</Button>
+      </div>
+    </div>
+  </section>
+</PageLayout>
